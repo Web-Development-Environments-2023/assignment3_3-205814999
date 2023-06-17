@@ -17,18 +17,45 @@
       style="position: absolute;top: 70%;left: 50%;transform: translate(-50%, -50%);"
     >
       Centeredasdasdad
-    </div>-->
+    </div> -->
   </div>
 </template>
 
 <script>
+// import { getRandomValues } from "crypto";
 import RecipePreviewList from "../components/RecipePreviewList";
 export default {
+  name: "MainPage",
   components: {
-    RecipePreviewList
-  }
+    RecipePreviewList,
+  },
+  // mounted(){
+  //   this.getRandomValues();
+  // },
+
+  // methods: {
+  //   async getRandomValues() {
+  //     //"https://api.spoonacular.com/recipes/random"
+  //     console.log("ll")
+  //     try {
+  //       console.log("hellooooooooooooo")
+  //       const response = await this.axios.get("http://localhost:3000/recipes/random")
+  //       console.log(response)
+  //       const recipes = response.data;
+  //       this.recipes = [];
+  //       this.recipes.push(...recipes)
+  //       console.log(this.recipes);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+     
+  //   },
+  // },
+  
 };
 </script>
+
+
 
 <style lang="scss" scoped>
 .RandomRecipes {

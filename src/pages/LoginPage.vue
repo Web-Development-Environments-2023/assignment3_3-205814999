@@ -2,6 +2,8 @@
   <div class="container">
     <h1 class="title">Login</h1>
     <b-form @submit.prevent="onLogin">
+
+
       <b-form-group
         id="input-group-Username"
         label-cols-sm="3"
@@ -19,6 +21,8 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+
+
       <b-form-group
         id="input-group-Password"
         label-cols-sm="3"
@@ -35,6 +39,8 @@
           Password is required
         </b-form-invalid-feedback>
       </b-form-group>
+
+
 
       <b-button
         type="submit"
@@ -115,6 +121,7 @@ export default {
         this.form.submitError = err.response.data.message;
       }
     },
+    
     onLogin() {
       // console.log("login method called");
       this.form.submitError = undefined;
