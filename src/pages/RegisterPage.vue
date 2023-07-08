@@ -361,10 +361,3 @@ export default {
   max-width: 500px;
 }
 </style>
-
-<!-- username: this.form.username,
-            password: this.form.firstName,
-            username: this.form.lastName,
-            password: this.form.country,
-            username: this.form.password,
-            username: this.form.email -->

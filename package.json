@@ -8,8 +8,8 @@
   "dependencies": {
     "autoprefixer": "10.4.5",
     "axios": "^1.4.0",
-    "bootstrap": "^4.5.0",
-    "bootstrap-vue": "^2.15.0",
+    "bootstrap": "^4.6.2",
+    "bootstrap-vue": "^2.23.1",
     "core-js": "^3.6.5",
     "sass": "^1.50.0",
     "vue": "^2.6.11",

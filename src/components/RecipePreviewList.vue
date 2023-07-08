@@ -37,6 +37,7 @@ export default {
     async updateRecipes() {
       try {
         const response = await this.axios.get("http://localhost:3000/recipes/random")
+        console.log("################## im here")
         console.log(response)
         const recipes = response.data;
         this.recipes = [];
