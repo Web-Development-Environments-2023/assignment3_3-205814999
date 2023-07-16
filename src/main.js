@@ -23,7 +23,7 @@ import {
   FormSelectPlugin,
   AlertPlugin,
   ToastPlugin,
-  LayoutPlugin,
+  LayoutPlugin
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
