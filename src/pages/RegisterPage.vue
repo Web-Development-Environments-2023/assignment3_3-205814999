@@ -22,7 +22,7 @@
           Username length should be between 3-8 characters long
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-if="!$v.form.username.alpha">
-          Username alpha
+          Username alphabetical characters required
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -40,17 +40,7 @@
           type="text"
           :state="validateState('firstName')"
         ></b-form-input>
-        <!-- <b-form-invalid-feedback v-if="!$v.form.firstName.required">
-          firstName is required
-        </b-form-invalid-feedback>
-        <b-form-invalid-feedback v-else-if="!$v.form.firstName.length">
-          firstName length should be between 3-8 characters long
-        </b-form-invalid-feedback>
-        <b-form-invalid-feedback v-if="!$v.form.firstName.alpha">
-          firstName alpha
-        </b-form-invalid-feedback> -->
       </b-form-group>
-
 
 
       <b-form-group
@@ -65,18 +55,7 @@
           type="text"
           :state="validateState('lastName')"
         ></b-form-input>
-        <!-- <b-form-invalid-feedback v-if="!$v.form.lastName.required">
-          lastName is required
-        </b-form-invalid-feedback>
-        <b-form-invalid-feedback v-else-if="!$v.form.lastName.length">
-          lastName length should be between 3-8 characters long
-        </b-form-invalid-feedback>
-        <b-form-invalid-feedback v-if="!$v.form.lastName.alpha">
-          lastName alpha
-        </b-form-invalid-feedback> -->
       </b-form-group>
-
-      
 
 
       <b-form-group
@@ -163,18 +142,7 @@
           type="text"
           :state="validateState('email')"
         ></b-form-input>
-        <!-- <b-form-invalid-feedback v-if="!$v.form.firstName.required">
-          firstName is required
-        </b-form-invalid-feedback>
-        <b-form-invalid-feedback v-else-if="!$v.form.firstName.length">
-          firstName length should be between 3-8 characters long
-        </b-form-invalid-feedback>
-        <b-form-invalid-feedback v-if="!$v.form.firstName.alpha">
-          firstName alpha
-        </b-form-invalid-feedback> -->
       </b-form-group>
-
-
 
 
       <b-button type="reset" variant="danger">Reset</b-button>
@@ -303,31 +271,31 @@ export default {
     //     this.form.submitError = err.response.data.message;
     //   }
     // },
-    async Register() {
-  try {
-    const response = await this.axios.post(
-      "http://localhost:3000/Register",
-      {
-        username: this.form.username,
-        firstname: this.form.firstName,
-        lastname: this.form.lastName,
-        country: this.form.country,
-        password: this.form.password,
-        email: this.form.email
+  async Register() {
+    try {
+      const response = await this.axios.post(
+        "http://localhost:3000/Register",
+        {
+          username: this.form.username,
+          firstname: this.form.firstName,
+          lastname: this.form.lastName,
+          country: this.form.country,
+          password: this.form.password,
+          email: this.form.email
+        }
+      );
+      
+      if (response && response.data) {
+        // Registration successful
+        this.$router.push("/login");
+      } else {
+        // Invalid response or missing data property
+        throw new Error("Invalid response from the server");
       }
-    );
-    
-    if (response && response.data) {
-      // Registration successful
-      this.$router.push("/login");
-    } else {
-      // Invalid response or missing data property
-      throw new Error("Invalid response from the server");
+    } catch (err) {
+      console.log(err);
+      this.form.submitError = err.message || "Registration failed";
     }
-  } catch (err) {
-    console.log(err);
-    this.form.submitError = err.message || "Registration failed";
-  }
 },
 
     onRegister() {
