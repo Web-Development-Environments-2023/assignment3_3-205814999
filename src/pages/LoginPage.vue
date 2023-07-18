@@ -115,7 +115,9 @@ export default {
         // this.$root.loggedIn = true;
         console.log(this.$root.store.login);
         this.$root.store.login(this.form.username);
-        this.$router.push("/");
+        if (this.$router.currentRoute.path !== '/') {
+          this.$router.push('/');
+        }
       } catch (err) {
         console.log(err.response);
         this.form.submitError = err.response.data.message;
@@ -139,5 +141,6 @@ export default {
 <style lang="scss" scoped>
 .container {
   max-width: 400px;
+  font-size: 15px;
 }
 </style>

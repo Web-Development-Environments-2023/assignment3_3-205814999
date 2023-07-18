@@ -1,15 +1,15 @@
 <template>
-  <b-container>
+  <div>
     <h3>
       {{ title }}:
       <slot></slot>
     </h3>
-    <b-row>
-      <b-col v-for="r in recipes" :key="r.id">
+    <div>
+      <div v-for="r in recipes" :key="r.id">
         <RecipePreview class="recipePreview" :recipe="r" />
-      </b-col>
-    </b-row>
-  </b-container>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -66,7 +66,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  min-height: 400px;
+.card-group-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card-wrapper {
+  flex-basis: calc(33.33% - 20px); /* Adjust the flex-basis and margin as needed */
+  margin: 10px; /* Adjust the margin as needed */
 }
 </style>
