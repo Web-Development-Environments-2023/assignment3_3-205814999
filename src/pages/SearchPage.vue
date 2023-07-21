@@ -1,9 +1,10 @@
 <template>
   <div class="container">
     <h1 class="title">Search Page</h1>
-    <br>
-    <input type="text" placeholder="Search" v-model="searchbody">
-    <button @click="search">Search</button>
+    <div class="search-container">
+      <input type="text" placeholder="Search" v-model="searchbody" />
+      <button @click="search">Search</button>
+    </div>
 
     <div class="filters">
       <label for="maxResults">Max Results:</label>
@@ -32,7 +33,7 @@
       </select>
     </div>
 
-    <div class="sorting">
+    <div class="sorting" v-if="searched && recipes.length > 0">
       <label for="sorting">Sort By:</label>
       <select id="sorting" v-model="sortingOption" @change="sortRecipes">
         <option value="popularity">Popularity</option>
@@ -130,7 +131,7 @@ export default {
     async search() {
       try {
         this.loading = true; // Set loading state to true
-        const response = await this.axios.post("http://localhost:3000/recipes/search", {
+        const response = await this.axios.post(this.$root.store.server_domain +"/recipes/search", {
           search: this.searchbody,
           limit: this.maxResults,
           cuisine: this.cuisine,
@@ -148,7 +149,7 @@ export default {
       } catch (err) {
         console.log(err);
         // Handle the error or display an appropriate message
-      }finally {
+      } finally {
         this.loading = false; // Set loading state to false when search is completed
       }
     },
@@ -181,6 +182,66 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  margin: 20px;
+  text-align: center;
+}
+
+.title {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filters label,
+.sorting label {
+  margin-right: 10px;
+}
+
+.filters select,
+.sorting select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 20px;
+}
+
 .spinner {
   display: flex;
   justify-content: center;
@@ -200,35 +261,6 @@ export default {
   100% {
     transform: rotate(360deg);
   }
-}
-.title {
-  margin: 20px 0;
-  font-size: 30px;
-  text-align: center;
-}
-
-.filters {
-  margin: 20px 0;
-}
-
-.filters label {
-  margin-right: 10px;
-}
-
-.filters select {
-  margin-right: 20px;
-}
-
-.sorting {
-  margin: 20px 0;
-}
-
-.sorting label {
-  margin-right: 10px;
-}
-
-.sorting select {
-  margin-right: 20px;
 }
 
 .recipePreview {

@@ -70,7 +70,12 @@ export default {
       showFavoriteTooltip: false,
       showImageTooltip: false,
       showWatchedTooltip: false,
+      favoriteRecipes: [],
+      isFavoritedValue: false, // Intermediate data property
     };
+  },
+  created() {
+    this.fetchPersonalRecipes(); // Fetch the favorite recipes on component creation
   },
   computed: {
     isWatched() {
@@ -78,17 +83,28 @@ export default {
       return clickedRecipes.includes(this.recipe.id);
     },
     isFavorite() {
-      // Replace with appropriate logic to determine if recipe is favorited by the user
-      return false;
+      return this.isFavoritedValue; 
     },
     watchedIconClass() {
       return this.isWatched ? 'fas fa-eye' : 'far fa-eye';
     },
   },
   methods: {
+    async fetchPersonalRecipes() {
+      try {
+        const res = await axios.get(this.$root.store.server_domain+"/users/favorites");
+        this.favoriteRecipes = res.data;
+        this.updateIsFavoritedValue(); // Call a method to update the intermediate data property
+      } catch (error) {
+        // Handle error
+      }
+    },
+    updateIsFavoritedValue() {
+      this.isFavoritedValue = this.personalRecipes.some((favorite) => favorite.id === this.recipe.id);
+    },
     async addWatched() {
       try {
-        const response = await this.axios.post("http://localhost:3000/user/last_seen", {
+        const response = await this.axios.post(this.$root.store.server_domain+"/users/last_seen", {
           recipeId: this.recipe.id
         });
         console.log(response.data); // Optional: Log the server's response
@@ -108,7 +124,7 @@ export default {
       if (!this.isFavorite) {
         // Send a POST request to mark the recipe as a favorite
         response = await this.axios.post(
-          this.$root.store.server_domain + '/user/favorites', { recipeId: this.recipe.id })
+          this.$root.store.server_domain + '/users/favorites', { recipeId: this.recipe.id })
           .then(response => {
             // Recipe successfully saved as favorite
             // Update the favorite status locally
@@ -129,6 +145,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .recipe-preview {
@@ -203,6 +220,7 @@ export default {
 
 .favorite-icon:hover {
   transform: scale(1.3);
+  color: red;
 }
 
 

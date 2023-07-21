@@ -10,7 +10,7 @@
     >
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group
-          label="Name"
+          label="Name:"
           label-for="name-input"
           invalid-feedback="Name is required"
           :state="nameState"
@@ -24,7 +24,7 @@
         </b-form-group>
 
         <b-form-group
-          label="Image Link"
+          label="Image Link:"
           label-for="image-input"
           invalid-feedback="Image is required"
           :state="imageState"
@@ -36,36 +36,45 @@
             required
           ></b-form-input>
         </b-form-group>
+
+
+        <b-form-group label="Time to make(minutes):" label-for="ttm-input">
+          <b-form-select
+            id="ttm-input"
+            v-model="timeToMake"
+            :options="ttmOptions"
+            :state="ttmState"
+            required
+          ></b-form-select>
+        </b-form-group>
+
+        <b-form-group label="Servings:" label-for="servings-input">
+          <b-form-select
+            id="servings-input"
+            v-model="servings"
+            :options="servingsOptions"
+            :state="servingState"
+            required
+          ></b-form-select>
+        </b-form-group>
         
-      <b-form-group label="Is Vegan?" label-for="is-vegan-input">
-        <b-form-checkbox
-          id="is-vegan-input"
-          v-model="isVegan"
-          :state="isVeganState"
-        >
-          Yes
-        </b-form-checkbox>
-      </b-form-group>
-
-      <b-form-group label="Is Vegetarian?" label-for="is-vegetarian-input">
-        <b-form-checkbox
-          id="is-vegetarian-input"
-          v-model="isVegetarian"
-          :state="isVegetarianState"
-        >
-          Yes
-        </b-form-checkbox>
-      </b-form-group>
-
-      <b-form-group label="Is Gluten-Free?" label-for="is-gluten-free-input">
-        <b-form-checkbox
-          id="is-gluten-free-input"
-          v-model="isGlutenFree"
-          :state="isGlutenFreeState"
-        >
-          Yes
-        </b-form-checkbox>
-      </b-form-group>
+        <div class="checkbox-row">
+          <b-form-group label="" label-for="is-vegan-input">
+            <b-form-checkbox id="is-vegan-input" v-model="isVegan" :state="isVeganState">
+              Vegan |
+            </b-form-checkbox>
+          </b-form-group>
+          <b-form-group label="" label-for="is-vegetarian-input">
+            <b-form-checkbox id="is-vegetarian-input" v-model="isVegetarian" :state="isVegetarianState">
+              Vegetarian |
+            </b-form-checkbox>
+          </b-form-group>
+          <b-form-group label="" label-for="is-gluten-free-input">
+            <b-form-checkbox id="is-gluten-free-input" v-model="isGlutenFree" :state="isGlutenFreeState">
+              Gluten Free
+            </b-form-checkbox>
+          </b-form-group>
+        </div>
       <!-- Ingredients -->
       <h5>Ingredients</h5>
       <div v-for="(ingredient, index) in ingredients" :key="'ingredient-' + index">
@@ -111,9 +120,6 @@
   <script>
   export default {
     name: "RecipeModal",
-     components: {
-    //
-  },
     data() {
         return {
         name: '',
@@ -121,7 +127,6 @@
         image: '',
         imageState: null,
         title: "",
-        readyInMinutes: 0,
         ingredients: [{ ingredient: '' }], // Initialize with an object containing an empty ingredient
         instructions: [{ instruction: '' }], // Initialize instructions with an empty string
         ingredientStates: [], // Array to track the validation state of each ingredient
@@ -132,6 +137,12 @@
         isGlutenFreeState: false,
         isVeganState: false,
         isVegetarianState: false,
+        servings: 1,
+        servingsOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        servingState: null,
+        timeToMake: 10,
+        ttmOptions: [10, 15, 30, 45, 60, 90, 120, 150, 180, 210],
+        ttmState: null,
         };
     },
     methods: {
@@ -161,6 +172,8 @@
       this.isVegan = false; // Reset to false when modal is opened
       this.isVegetarian = false; // Reset to false when modal is opened
       this.isGlutenFree = false;
+      this.servings=1;
+      this.timeToMake = 10;
     },
     handleOk(bvModalEvent) {
       // Prevent modal from closing
@@ -176,7 +189,7 @@
           // Prepare the data to send to the server
     const data = {
       title: this.name,
-      readyInMinutes: this.readyInMinutes,
+      readyInMinutes: this.timeToMake,
       image: this.image,
       popularity: 0, // You may need to update this value based on your requirements
       vegan: this.isVegan,
@@ -184,12 +197,12 @@
       glutenFree: this.isGlutenFree,
       instruction: this.instructions.map((instruction) => instruction.instruction),
       ingredients: this.ingredients.map((ingredient) => ingredient.ingredient),
-      servings: 0, // You may need to update this value based on your requirements
+      servings: this.servings, // You may need to update this value based on your requirements
     };
     console.log(data);
     try {
       // Send the data to the server using an HTTP POST request
-      const response = await this.axios.post(this.$root.store.server_domain + '/user/recipes_created', data);
+      const response = await this.axios.post(this.$root.store.server_domain + '/users/recipes_created', data);
 
       // Handle the response from the server (if needed)
       console.log(response.data); // For example, you can log the response message
@@ -213,5 +226,33 @@
   </script>
   
   <style scoped>
+  .checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adjust the gap between checkboxes as desired */
+}
+
+/* Remove label styles for checkboxes */
+.checkbox-row .b-form-group .b-form-checkbox-label {
+  display: none;
+}
+
+/* Adjust the checkbox style (optional) */
+.checkbox-row .b-form-checkbox {
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f8f9fa;
+}
+
+/* Style the checked checkbox */
+.checkbox-row .b-form-checkbox:checked {
+  background-color: #007bff;
+  color: #fff;
+}
   </style>
   

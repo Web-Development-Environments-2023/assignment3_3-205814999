@@ -7,7 +7,6 @@
           <RecipePreviewList
             title="Random Recipes"
             :recipes="randomRecipes"
-            class="RandomRecipes center"
           />
         </b-col>
         <b-col v-if="$root.store.username">
@@ -15,11 +14,6 @@
             v-if="lastWatchedRecipes.length > 0"
             title="Last Watched Recipes"
             :recipes="lastWatchedRecipes"
-            :class="{
-              RandomRecipes: true,
-              blur: $root.store.username,
-              center: true
-            }"
           />
           <div v-else>
             <!-- Show a message when there are no last watched recipes -->
@@ -61,14 +55,14 @@ export default {
   methods: {
     async updateRecipes() {
       try {
-        const randomResponse = await this.axios.get("http://localhost:3000/recipes/random");
+        const randomResponse = await this.axios.get(this.$root.store.server_domain+"/recipes/random");
         const randomRecipes = randomResponse.data;
 
         this.randomRecipes = randomRecipes;
 
         if (this.$root.store.username) {
           // If the user is logged in, fetch last watched recipes
-          const watchedResponse = await this.axios.get("http://localhost:3000/user/last_seen");
+          const watchedResponse = await this.axios.get(this.$root.store.server_domain+"/users/last_seen");
           const watchedRecipes = watchedResponse.data;
           this.lastWatchedRecipes = watchedRecipes;
         }
