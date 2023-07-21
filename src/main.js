@@ -11,6 +11,7 @@ const router = new VueRouter({
 });
 
 import Vuelidate from "vuelidate";
+import BootstrapVue from "bootstrap-vue"; // Import BootstrapVue
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import {
@@ -37,6 +38,7 @@ import {
   ToastPlugin,
   LayoutPlugin,
 ].forEach((x) => Vue.use(x));
+Vue.use(BootstrapVue);
 Vue.use(Vuelidate);
 
 axios.interceptors.request.use(

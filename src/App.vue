@@ -31,7 +31,7 @@
             </b-dropdown>
             </li>
             <li v-if="$root.store.username" class="nav-item">
-              <router-link :to="{ name: 'create' }" class="nav-link">Create Recipe | </router-link>
+              <b-button v-b-modal.modal-prevent-closing>Create Recipe</b-button>
             </li>
             <li v-if="$root.store.username" class="nav-item">
               <span class="navbar-text">
@@ -41,20 +41,28 @@
             </li>
           </ul>
         </div>
+        <RecipeModal></RecipeModal>
       </div>
     </nav>
+
     <div class="container py-4">
       <router-view />
     </div>
   </div>
+  
 </template>
 
 <script>
+import RecipeModal from "./components/RecipeModal.vue"
 export default {
   name: "App",
-  // components: {
-  //   NavBar,
-  // },
+  components: {
+    RecipeModal,
+  },
+  data() {
+    return {
+    };
+  },
   methods: {
     logout() {
       this.$root.store.logout();

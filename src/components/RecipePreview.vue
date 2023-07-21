@@ -86,12 +86,21 @@ export default {
     },
   },
   methods: {
-    addWatched() {
+    async addWatched() {
+      try {
+        const response = await this.axios.post("http://localhost:3000/user/last_seen", {
+          recipeId: this.recipe.id
+        });
+        console.log(response.data); // Optional: Log the server's response
+      } catch (error) {
+        console.log(error);
+      }
+      // Local storage update (Optional)
       const clickedRecipes = JSON.parse(localStorage.getItem('clickedRecipes')) || [];
       if (!clickedRecipes.includes(this.recipe.id)) {
         clickedRecipes.push(this.recipe.id);
+        localStorage.setItem('clickedRecipes', JSON.stringify(clickedRecipes));
       }
-      localStorage.setItem('clickedRecipes', JSON.stringify(clickedRecipes));
     },
     async toggleFavorite() {
       let response;

@@ -4,19 +4,29 @@
       <!-- <h1 class="title">Main Page</h1> -->
       <b-row>
         <b-col>
-          <RecipePreviewList title="Randomm Recipes" class="RandomRecipes center" />
+          <RecipePreviewList
+            title="Random Recipes"
+            :recipes="randomRecipes"
+            class="RandomRecipes center"
+          />
         </b-col>
         <b-col v-if="$root.store.username">
           <RecipePreviewList
-      title="Last Viewed Recipes"
-      :class="{
-        RandomRecipes: true,
-        blur: $root.store.username,
-        center: true
-      }"
-      disabled
-    ></RecipePreviewList>
+            v-if="lastWatchedRecipes.length > 0"
+            title="Last Watched Recipes"
+            :recipes="lastWatchedRecipes"
+            :class="{
+              RandomRecipes: true,
+              blur: $root.store.username,
+              center: true
+            }"
+          />
+          <div v-else>
+            <!-- Show a message when there are no last watched recipes -->
+            <p>No last watched recipes available.</p>
+          </div>
         </b-col>
+
         <b-col v-else>
           <LoginPage></LoginPage>
         </b-col>
@@ -38,28 +48,36 @@ export default {
     RecipePreviewList,
     LoginPage
   },
-  // mounted(){
-  //   this.getRandomValues();
-  // },
+  data() {
+    return {
+      randomRecipes: [],
+      lastWatchedRecipes: [],
+    };
+  },
+  async mounted() {
+    this.updateRecipes();
+  },
 
-  // methods: {
-  //   async getRandomValues() {
-  //     //"https://api.spoonacular.com/recipes/random"
-  //     console.log("ll")
-  //     try {
-  //       console.log("hellooooooooooooo")
-  //       const response = await this.axios.get("http://localhost:3000/recipes/random")
-  //       console.log(response)
-  //       const recipes = response.data;
-  //       this.recipes = [];
-  //       this.recipes.push(...recipes)
-  //       console.log(this.recipes);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-     
-  //   },
-  // },
+  methods: {
+    async updateRecipes() {
+      try {
+        const randomResponse = await this.axios.get("http://localhost:3000/recipes/random");
+        const randomRecipes = randomResponse.data;
+
+        this.randomRecipes = randomRecipes;
+
+        if (this.$root.store.username) {
+          // If the user is logged in, fetch last watched recipes
+          const watchedResponse = await this.axios.get("http://localhost:3000/user/last_seen");
+          const watchedRecipes = watchedResponse.data;
+          this.lastWatchedRecipes = watchedRecipes;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+  },
   
 };
 </script>
