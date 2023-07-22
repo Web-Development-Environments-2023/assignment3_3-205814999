@@ -17,7 +17,10 @@
           />
           <div v-else>
             <!-- Show a message when there are no last watched recipes -->
-            <p>No last watched recipes available.</p>
+            <p v-if="!loading">No last watched recipes available.</p>
+          </div>
+          <div v-if="loading" class="spinner">
+            <i class="fas fa-spinner fa-spin"></i>
           </div>
         </b-col>
 
@@ -46,6 +49,7 @@ export default {
     return {
       randomRecipes: [],
       lastWatchedRecipes: [],
+      loading: false, // Loading state
     };
   },
   async mounted() {
@@ -55,6 +59,7 @@ export default {
   methods: {
     async updateRecipes() {
       try {
+        this.loading=true;
         const randomResponse = await this.axios.get(this.$root.store.server_domain+"/recipes/random");
         const randomRecipes = randomResponse.data;
 
@@ -69,6 +74,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
+      this.loading=false;
     },
 
   },
@@ -89,5 +95,25 @@ export default {
 ::v-deep .blur .recipe-preview {
   pointer-events: none;
   cursor: default;
+}
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.fa-spinner {
+  animation: fa-spin 2s infinite linear;
+  font-size: 80px;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

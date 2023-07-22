@@ -14,7 +14,7 @@
       <div class="actions">
         <span
           class="icon-background"
-          v-if="isWatched || isFavorite"
+          v-if="isWatched"
         ></span>
         <button
         class="watched-icon" v-if="isWatched"
@@ -27,14 +27,15 @@
         </button>
         <button
           class="favorite-icon"
-          :class="{ active: isFavorite }"
+          :class="{ active: isFavorited }"
+          :disabled="isFavorited"
           @click.stop="toggleFavorite"
           @mouseover="showFavoriteTooltip = true"
           @mouseout="showFavoriteTooltip = false"
           @mouseover.stop
         >
           <i class="fas fa-heart"></i>
-          <span class="tooltip" v-if="showFavoriteTooltip">Favorite</span>
+          <span class="tooltip" v-if="showFavoriteTooltip  && !isFavorited">Favorite</span>
         </button>
       </div>
     </div>
@@ -71,19 +72,17 @@ export default {
       showImageTooltip: false,
       showWatchedTooltip: false,
       favoriteRecipes: [],
-      isFavoritedValue: false, // Intermediate data property
+      isFavorited: false, // Intermediate data property
     };
   },
-  created() {
+  mounted() {
+    console.log("in mounted recipeid="+this.recipe.id);
     this.fetchPersonalRecipes(); // Fetch the favorite recipes on component creation
   },
   computed: {
     isWatched() {
       const clickedRecipes = JSON.parse(localStorage.getItem('clickedRecipes')) || [];
       return clickedRecipes.includes(this.recipe.id);
-    },
-    isFavorite() {
-      return this.isFavoritedValue; 
     },
     watchedIconClass() {
       return this.isWatched ? 'fas fa-eye' : 'far fa-eye';
@@ -92,15 +91,17 @@ export default {
   methods: {
     async fetchPersonalRecipes() {
       try {
-        const res = await axios.get(this.$root.store.server_domain+"/users/favorites");
+        const res = await this.axios.get(this.$root.store.server_domain+"/users/favorites");
         this.favoriteRecipes = res.data;
         this.updateIsFavoritedValue(); // Call a method to update the intermediate data property
       } catch (error) {
-        // Handle error
+        console.log("error in fetchPersonalRecipes="+error);
       }
     },
     updateIsFavoritedValue() {
-      this.isFavoritedValue = this.personalRecipes.some((favorite) => favorite.id === this.recipe.id);
+      console.log("in updateIsFavorited before:"+this.isFavorited);
+      this.isFavorited = this.favoriteRecipes.some((favorite) => favorite.id === this.recipe.id);
+      console.log("in updateIsFavorited, updated to="+this.isFavorited);
     },
     async addWatched() {
       try {
@@ -119,21 +120,15 @@ export default {
       }
     },
     async toggleFavorite() {
-      let response;
-
-      if (!this.isFavorite) {
-        // Send a POST request to mark the recipe as a favorite
-        response = await this.axios.post(
-          this.$root.store.server_domain + '/users/favorites', { recipeId: this.recipe.id })
-          .then(response => {
-            // Recipe successfully saved as favorite
-            // Update the favorite status locally
-            this.isFavorite = true;
-          })
-          .catch(error => {
-            // Handle the error
-            console.error('Failed to mark recipe as favorite:', error);
-          });
+      console.log("in toggleFavorite,isFavorited="+this.isFavorited);
+      try {
+        const response = await this.axios.post(
+          this.$root.store.server_domain + '/users/favorites',
+          { recipeId: this.recipe.id }
+        );
+        this.isFavorited = true;
+      } catch (error) {
+        console.error('Failed to mark recipe as favorite:', error);
       }
     },
   },
