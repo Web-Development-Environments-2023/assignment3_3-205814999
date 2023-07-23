@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <router-link :to="{ name: 'main' }" class="navbar-brand logo">Main Page</router-link>
+        <router-link :to="{ name: 'main' }" class="navbar-brand">Main Page</router-link>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
           aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -26,28 +26,34 @@
             <li v-if="!$root.store.username" class="nav-item">
               <router-link :to="{ name: 'login' }" class="nav-link">Login</router-link>
             </li>
-            <li v-else class="nav-item dropdown">
-              <b-dropdown id="navbarDropdown" text="Personal" toggle-class="nav-link">
+            
+          <!-- Personal dropdown menu -->
+          <li v-else class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" @click="toggleDropdown" aria-haspopup="true" aria-expanded="false">
+              Personal
+            </a>
+            <div class="dropdown-menu" :class="{ show: dropdownOpen }" aria-labelledby="navbarDropdown">
               <router-link :to="{ name: 'favorites' }" class="dropdown-item">My Favorites</router-link>
-              <b-dropdown-divider></b-dropdown-divider>
+              <div class="dropdown-divider"></div>
               <router-link :to="{ name: 'myrecipes' }" class="dropdown-item">My Recipes</router-link>
-              <b-dropdown-divider></b-dropdown-divider>
+              <div class="dropdown-divider"></div>
               <router-link :to="{ name: 'family' }" class="dropdown-item">My Family Recipes</router-link>
-            </b-dropdown>
-            </li>
-            <li v-if="$root.store.username" class="nav-item">
-              <router-link :to="{ name: 'create' }" class="nav-link">Create Recipe | </router-link>
-            </li>
-            <li v-if="$root.store.username" class="nav-item">
-              <span class="navbar-text">
-                {{ $root.store.username }}
-              </span>
+              <div class="dropdown-divider"></div>
+              <b-button v-b-modal.modal-prevent-closing class="dropdown-item">Create Recipe</b-button>
+            </div>
+          </li>
+
+            <!-- User info and logout -->
+            <li v-if="$root.store.username" class="nav-item user-info">
+              <span class="navbar-text">Logged in as: {{ $root.store.username }}</span>
               <button class="btn btn-primary ml-2" @click="logout">Logout</button>
             </li>
           </ul>
         </div>
+        <RecipeModal></RecipeModal>
       </div>
     </nav>
+
     <div class="container py-4">
       <router-view />
     </div>
@@ -55,101 +61,85 @@
 </template>
 
 <script>
+import RecipeModal from "./components/RecipeModal.vue";
 export default {
   name: "App",
-  // components: {
-  //   NavBar,
-  // },
+  components: {
+    RecipeModal,
+  },
+  data() {
+    return {
+      dropdownOpen: false,
+    };
+  },
   methods: {
+    // Method to toggle the dropdown
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
     logout() {
-      this.$root.store.logout();
-      this.$root.toast("Logout", "User logged out successfully", "success");
-
-      this.$router.push("/").catch(() => {
-        this.$forceUpdate();
-      });
-    }
-  }
+      // ... Existing logout method ...
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-@import "@/scss/form-style.scss";
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  min-height: 100vh;
+/* Dark-themed background */
+html {
+  background-color: #1a1a1a;
+  color: #fff;
 }
 
-#navbarDropdown {
-  background: transparent;
-  color: #cf0e0e;
-  font-weight: bold;
-  padding: 0;
-}
-
-.logo {
-  font-weight: bold;
-  color: #42b983;
-  font-size: 24px;
-  padding: 0;
-}
-
+/* Navbar */
 .navbar {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #222;
 }
 
-.navbar-brand {
-  font-weight: bold;
-  color: #42b983;
-}
-
+/* Navbar brand and links */
+.navbar-brand,
 .navbar-nav .nav-link {
-  font-weight: bold;
-  color: #2c3e50;
+  color: #fff;
 }
 
-.nav-link:hover,
-.nav-link:focus {
-  color: #42b983;
+.navbar-brand:hover,
+.navbar-nav .nav-link:hover {
+  color: #00bfff;
 }
 
-.navbar-text {
-  font-weight: bold;
-  color: #2c3e50;
+/* Active link */
+.navbar-nav .active > .nav-link {
+  color: #00bfff;
 }
 
-.btn-primary {
-  background-color: #42b983;
-  border-color: #42b983;
+/* Personal dropdown menu */
+.personal-dropdown-button {
+  color: #fff;
+  background-color: #222;
+  border-color: #00bfff;
 }
 
-.btn-primary:hover,
-.btn-primary:focus {
-  background-color: #2a946a;
-  border-color: #2a946a;
+/* Divider */
+.navbar-divider {
+  border-color: #00bfff;
 }
 
-.container {
-  background-color: #f8f9fa;
-  border-radius: 4px;
+/* User info and logout */
+.user-info .btn {
+  background-color: #00bfff;
+  border-color: #00bfff;
+  color: #fff;
 }
 
-.dropdown-toggle {
-  cursor: pointer;
-  color: inherit;
-  text-decoration: none;
+.user-info .btn:hover {
+  background-color: #0099cc;
+  border-color: #0099cc;
+  color: #fff;
 }
 
-.dropdown-toggle:hover {
-  text-decoration: underline;
-}
-
-#navbarDropDrown{
-  
+/* Recipe Modal */
+.modal-content {
+  background-color: #222;
+  color: #fff;
 }
 </style>

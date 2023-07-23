@@ -7,6 +7,7 @@
           <img :src="recipe.image" :alt="recipe.title" class="recipe-image img-fluid mb-4">
         </div>
         <div class="col-md-6">
+          <p class="mb-2">Servings: {{ recipe.servings }}</p>
           <p class="mb-2">Ready in: {{ recipe.readyInMinutes }} minutes</p>
           <p class="mb-2">Popularity: {{ recipe.popularity }}</p>
           <p class="mb-2">Vegan: {{ recipe.vegan ? 'Yes' : 'No' }}</p>
@@ -24,9 +25,6 @@
       <ol class="list-group">
         <li class="list-group-item" v-for="step in recipe.instruction" :key="step" v-html="removeStepNumbering(step)"></li>
       </ol>
-
-      <h3 class="mt-4">Servings</h3>
-      <p>{{ recipe.servings }}</p>
     </div>
     <div v-else>
       <p>Loading recipe...</p>

@@ -4,19 +4,23 @@
       <!-- <h1 class="title">Main Page</h1> -->
       <b-row>
         <b-col>
-          <RecipePreviewList title="Randomm Recipes" class="RandomRecipes center" />
+          <RecipePreviewList
+            title="Random Recipes"
+            :recipes="randomRecipes"
+          />
         </b-col>
         <b-col v-if="$root.store.username">
           <RecipePreviewList
       title="Last Viewed Recipes"
       :class="{
         RandomRecipes: true,
-        
+        blur: $root.store.username,
         center: true
       }"
       disabled
     ></RecipePreviewList>
         </b-col>
+
         <b-col v-else>
           <LoginPage></LoginPage>
         </b-col>
@@ -38,28 +42,39 @@ export default {
     RecipePreviewList,
     LoginPage
   },
-  // mounted(){
-  //   this.getRandomValues();
-  // },
+  data() {
+    return {
+      randomRecipes: [],
+      lastWatchedRecipes: [],
+      loading: false, // Loading state
+    };
+  },
+  async mounted() {
+    this.updateRecipes();
+  },
 
-  // methods: {
-  //   async getRandomValues() {
-  //     //"https://api.spoonacular.com/recipes/random"
-  //     console.log("ll")
-  //     try {
-  //       console.log("hellooooooooooooo")
-  //       const response = await this.axios.get("http://localhost:3000/recipes/random")
-  //       console.log(response)
-  //       const recipes = response.data;
-  //       this.recipes = [];
-  //       this.recipes.push(...recipes)
-  //       console.log(this.recipes);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-     
-  //   },
-  // },
+  methods: {
+    async updateRecipes() {
+      try {
+        this.loading=true;
+        const randomResponse = await this.axios.get(this.$root.store.server_domain+"/recipes/random");
+        const randomRecipes = randomResponse.data;
+
+        this.randomRecipes = randomRecipes;
+
+        if (this.$root.store.username) {
+          // If the user is logged in, fetch last watched recipes
+          const watchedResponse = await this.axios.get(this.$root.store.server_domain+"/users/last_seen");
+          const watchedRecipes = watchedResponse.data;
+          this.lastWatchedRecipes = watchedRecipes;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      this.loading=false;
+    },
+
+  },
   
 };
 </script>
@@ -77,5 +92,25 @@ export default {
 ::v-deep .blur .recipe-preview {
   pointer-events: none;
   cursor: default;
+}
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.fa-spinner {
+  animation: fa-spin 2s infinite linear;
+  font-size: 80px;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

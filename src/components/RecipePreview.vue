@@ -14,7 +14,7 @@
       <div class="actions">
         <span
           class="icon-background"
-          v-if="isWatched || isFavorite"
+          v-if="isWatched"
         ></span>
         <button
         class="watched-icon" v-if="isWatched"
@@ -29,14 +29,13 @@
         <button
           class="favorite-icon"
           :class="{ active: isFavorite }"
-          
-          @click.stop="addFavorite"
+          @click.stop="toggleFavorite"
           @mouseover="showFavoriteTooltip = true"
           @mouseout="showFavoriteTooltip = false"
           @mouseover.stop
         >
           <i class="fas fa-heart"></i>
-          <span class="tooltip" v-if="showFavoriteTooltip">Favorite</span>
+          <span class="tooltip" v-if="showFavoriteTooltip  && !isFavorited">Favorite</span>
         </button>
       </div>
     </div>
@@ -72,66 +71,72 @@ export default {
       showFavoriteTooltip: false,
       showImageTooltip: false,
       showWatchedTooltip: false,
+      favoriteRecipes: [],
+      isFavorited: false, // Intermediate data property
     };
+  },
+  mounted() {
+    console.log("in mounted recipeid="+this.recipe.id);
+    this.fetchPersonalRecipes(); // Fetch the favorite recipes on component creation
   },
   computed: {
     isWatched() {
       const clickedRecipes = JSON.parse(localStorage.getItem('clickedRecipes')) || [];
       return clickedRecipes.includes(this.recipe.id);
     },
-    isFavorite() {
-      // Replace with appropriate logic to determine if recipe is favorited by the user
-      return false;
-    },
     watchedIconClass() {
       return this.isWatched ? 'fas fa-eye' : 'far fa-eye';
     },
   },
   methods: {
-    addWatched() {
+    async fetchPersonalRecipes() {
+      try {
+        const res = await this.axios.get(this.$root.store.server_domain+"/users/favorites");
+        this.favoriteRecipes = res.data;
+        this.updateIsFavoritedValue(); // Call a method to update the intermediate data property
+      } catch (error) {
+        console.log("error in fetchPersonalRecipes="+error);
+      }
+    },
+    updateIsFavoritedValue() {
+      console.log("in updateIsFavorited before:"+this.isFavorited);
+      this.isFavorited = this.favoriteRecipes.some((favorite) => favorite.id === this.recipe.id);
+      console.log("in updateIsFavorited, updated to="+this.isFavorited);
+    },
+    async addWatched() {
+      try {
+        const response = await this.axios.post(this.$root.store.server_domain+"/users/last_seen", {
+          recipeId: this.recipe.id
+        });
+        console.log(response.data); // Optional: Log the server's response
+      } catch (error) {
+        console.log(error);
+      }
+      // Local storage update (Optional)
       const clickedRecipes = JSON.parse(localStorage.getItem('clickedRecipes')) || [];
       if (!clickedRecipes.includes(this.recipe.id)) {
         clickedRecipes.push(this.recipe.id);
+        localStorage.setItem('clickedRecipes', JSON.stringify(clickedRecipes));
       }
-      localStorage.setItem('clickedRecipes', JSON.stringify(clickedRecipes));
     },
-    async addFavorite() {
-      console.log("addFavorite was called");
-      try {
-        const response = await this.axios.post(
-          this.$root.store.server_domain + '/users/favorites',
-          { recipeId: this.recipe.id },
-          { withCredentials: true }
-        );
-        if (response.status === 200) {
-          alert("The Recipe successfully saved as favorite");
-        } else {
-          alert("Failed to save the recipe as favorite");
-        }
-      } catch (error) {
-        console.error("Failed to save the recipe as favorite", error);
-      }
-    },
-    // async toggleFavorite() {
-    //   console.log("hello$$$$$$$$$")
-    //   console.log(this.isFavorite)
-    //   console.log(this.recipe.id)
-    //   console.log(this.$root.store.server_domain)
-    //   response = await this.axios.post(
-    //        this.$root.store.server_domain + '/users/favorites',
-    //         { recipeId: this.recipe.id },
-    //          { withCredentials: true })
-    //         .then((response) => {
-    //          // Recipe successfully saved as favorite
-    //          // Update the favorite status locally
-    //          console.log(response)
-    //          this.isFavorite = true;
-    //        })
-    //        .catch(error => {
-    //          // Handle the error
-    //          console.error('Failed to mark recipe as favorite:', error);
-    //        })
-    // },
+    async toggleFavorite() {
+      let response;
+
+      if (!this.isFavorite) {
+        // Send a POST request to mark the recipe as a favorite
+        response = await this.axios.post(
+          this.$root.store.server_domain + '/user/favorites', { recipeId: this.recipe.id })
+          .then(response => {
+            // Recipe successfully saved as favorite
+            // Update the favorite status locally
+            this.isFavorite = true;
+          })
+          .catch(error => {
+            // Handle the error
+            console.error('Failed to mark recipe as favorite:', error);
+          });
+      }
+    },
   },
   props: {
     recipe: {
@@ -141,6 +146,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .recipe-preview {
@@ -215,6 +221,7 @@ export default {
 
 .favorite-icon:hover {
   transform: scale(1.3);
+  color: red;
 }
 
 

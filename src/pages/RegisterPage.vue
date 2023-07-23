@@ -271,31 +271,31 @@ export default {
     //     this.form.submitError = err.response.data.message;
     //   }
     // },
-  async Register() {
-    try {
-      const response = await this.axios.post(
-        "http://localhost:3000/Register",
-        {
-          username: this.form.username,
-          firstname: this.form.firstName,
-          lastname: this.form.lastName,
-          country: this.form.country,
-          password: this.form.password,
-          email: this.form.email
-        }
-      );
-      
-      if (response && response.data) {
-        // Registration successful
-        this.$router.push("/login");
-      } else {
-        // Invalid response or missing data property
-        throw new Error("Invalid response from the server");
+    async Register() {
+  try {
+    const response = await this.axios.post(
+      "http://localhost:3000/Register",
+      {
+        username: this.form.username,
+        firstname: this.form.firstName,
+        lastname: this.form.lastName,
+        country: this.form.country,
+        password: this.form.password,
+        email: this.form.email
       }
-    } catch (err) {
-      console.log(err);
-      this.form.submitError = err.message || "Registration failed";
+    );
+    
+    if (response && response.data) {
+      // Registration successful
+      this.$router.push("/login");
+    } else {
+      // Invalid response or missing data property
+      throw new Error("Invalid response from the server");
     }
+  } catch (err) {
+    console.log(err);
+    this.form.submitError = err.message || "Registration failed";
+  }
 },
 
     onRegister() {
