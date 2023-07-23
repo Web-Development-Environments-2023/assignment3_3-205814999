@@ -3,6 +3,7 @@ import App from "./App.vue";
 import VueAxios from "vue-axios";
 import axios from "axios";
 
+
 import routes from "./routes";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
@@ -11,6 +12,7 @@ const router = new VueRouter({
 });
 
 import Vuelidate from "vuelidate";
+import BootstrapVue from "bootstrap-vue"; // Import BootstrapVue
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import {
@@ -23,7 +25,7 @@ import {
   FormSelectPlugin,
   AlertPlugin,
   ToastPlugin,
-  LayoutPlugin,
+  LayoutPlugin
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -37,6 +39,7 @@ import {
   ToastPlugin,
   LayoutPlugin,
 ].forEach((x) => Vue.use(x));
+Vue.use(BootstrapVue);
 Vue.use(Vuelidate);
 
 axios.interceptors.request.use(
@@ -67,6 +70,7 @@ Vue.use(VueAxios, axios);
 Vue.config.productionTip = false;
 
 const shared_data = {
+  server_domain : "https://ronidanrecipes.cs.bgu.ac.il",
   username: localStorage.username,
   login(username) {
     localStorage.setItem("username", username);

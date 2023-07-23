@@ -2,6 +2,7 @@
   <div class="container">
     <h1 class="title">Register</h1>
     <b-form @submit.prevent="onRegister" @reset.prevent="onReset">
+
       <b-form-group
         id="input-group-username"
         label-cols-sm="3"
@@ -21,9 +22,41 @@
           Username length should be between 3-8 characters long
         </b-form-invalid-feedback>
         <b-form-invalid-feedback v-if="!$v.form.username.alpha">
-          Username alpha
+          Username alphabetical characters required
         </b-form-invalid-feedback>
       </b-form-group>
+
+
+
+      <b-form-group
+        id="input-group-firstName"
+        label-cols-sm="3"
+        label="firstName:"
+        label-for="firstName"
+      >
+        <b-form-input
+          id="firstName"
+          v-model="$v.form.firstName.$model"
+          type="text"
+          :state="validateState('firstName')"
+        ></b-form-input>
+      </b-form-group>
+
+
+      <b-form-group
+        id="input-group-lastName"
+        label-cols-sm="3"
+        label="lastName:"
+        label-for="lastName"
+      >
+        <b-form-input
+          id="lastName"
+          v-model="$v.form.lastName.$model"
+          type="text"
+          :state="validateState('lastName')"
+        ></b-form-input>
+      </b-form-group>
+
 
       <b-form-group
         id="input-group-country"
@@ -41,6 +74,8 @@
           Country is required
         </b-form-invalid-feedback>
       </b-form-group>
+
+
 
       <b-form-group
         id="input-group-Password"
@@ -68,6 +103,9 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+
+
+
       <b-form-group
         id="input-group-confirmedPassword"
         label-cols-sm="3"
@@ -89,6 +127,23 @@
           The confirmed password is not equal to the original password
         </b-form-invalid-feedback>
       </b-form-group>
+
+
+
+      <b-form-group
+        id="input-group-email"
+        label-cols-sm="3"
+        label="email:"
+        label-for="email"
+      >
+        <b-form-input
+          id="email"
+          v-model="$v.form.email.$model"
+          type="text"
+          :state="validateState('email')"
+        ></b-form-input>
+      </b-form-group>
+
 
       <b-button type="reset" variant="danger">Reset</b-button>
       <b-button
@@ -120,6 +175,7 @@
 </template>
 
 <script>
+// import { Console } from "console";
 import countries from "../assets/countries";
 import {
   required,
@@ -156,6 +212,12 @@ export default {
         length: (u) => minLength(3)(u) && maxLength(8)(u),
         alpha
       },
+      firstName: {
+        required,
+      },
+      lastName: {
+        required,
+      },
       country: {
         required
       },
@@ -166,7 +228,14 @@ export default {
       confirmedPassword: {
         required,
         sameAsPassword: sameAs("password")
+      },
+
+      
+      email: {
+        required
       }
+
+
     }
   },
   mounted() {
@@ -179,31 +248,63 @@ export default {
       const { $dirty, $error } = this.$v.form[param];
       return $dirty ? !$error : null;
     },
-    async Register() {
-      try {
-        const response = await this.axios.post(
-          // "https://test-for-3-2.herokuapp.com/user/Register",
-          this.$root.store.server_domain + "/Register",
+    // async Register() {
+    //   try {
+    //     const response = await this.axios.post(
+    //       // "https://test-for-3-2.herokuapp.com/user/Register",
+    //       "http://127.0.0.1.3000/Register",
 
-          {
-            username: this.form.username,
-            password: this.form.password
-          }
-        );
-        this.$router.push("/login");
-        // console.log(response);
-      } catch (err) {
-        console.log(err.response);
-        this.form.submitError = err.response.data.message;
+    //       {
+    //         username: this.form.username,
+    //         firstname: this.form.firstName,
+    //         lastname: this.form.lastName,
+    //         country: this.form.country,
+    //         password: this.form.password,
+    //         email: this.form.email            
+    //       }
+    //     );
+       
+    //     this.$router.push("/login");
+    //     // console.log(response);
+    //   } catch (err) {
+    //     console.log(err.response);
+    //     this.form.submitError = err.response.data.message;
+    //   }
+    // },
+    async Register() {
+  try {
+    const response = await this.axios.post(
+      "http://localhost:3000/Register",
+      {
+        username: this.form.username,
+        firstname: this.form.firstName,
+        lastname: this.form.lastName,
+        country: this.form.country,
+        password: this.form.password,
+        email: this.form.email
       }
-    },
+    );
+    
+    if (response && response.data) {
+      // Registration successful
+      this.$router.push("/login");
+    } else {
+      // Invalid response or missing data property
+      throw new Error("Invalid response from the server");
+    }
+  } catch (err) {
+    console.log(err);
+    this.form.submitError = err.message || "Registration failed";
+  }
+},
+
     onRegister() {
-      // console.log("register method called");
+      console.log("register method called");
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      // console.log("register method go");
+      console.log("register method go");
       this.Register();
     },
     onReset() {
@@ -226,5 +327,6 @@ export default {
 <style lang="scss" scoped>
 .container {
   max-width: 500px;
+  font-size: 15px;
 }
 </style>
