@@ -1,7 +1,6 @@
 <template>
     <div>
-        <RecipePreview>
-        </RecipePreview>
+        <RecipePreview></RecipePreview>
     </div>    
 </template>
 

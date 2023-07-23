@@ -15,6 +15,11 @@
             <li class="nav-item">
               <router-link :to="{ name: 'about' }" class="nav-link">About</router-link>
             </li>
+
+            <li v-if="!$root.store.username" class="nav-item">
+              <router-link :to="{ name: 'favorites' }" class="nav-link">Favorites</router-link>
+            </li>
+
             <li v-if="!$root.store.username" class="nav-item">
               <router-link :to="{ name: 'register' }" class="nav-link">Register</router-link>
             </li>

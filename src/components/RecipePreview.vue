@@ -25,10 +25,12 @@
           <i :class="watchedIconClass"></i>
           <span class="tooltip" v-if="showWatchedTooltip">Has been watched</span>
         </button>
+
         <button
           class="favorite-icon"
           :class="{ active: isFavorite }"
-          @click.stop="toggleFavorite"
+          
+          @click.stop="addFavorite"
           @mouseover="showFavoriteTooltip = true"
           @mouseout="showFavoriteTooltip = false"
           @mouseover.stop
@@ -93,24 +95,43 @@ export default {
       }
       localStorage.setItem('clickedRecipes', JSON.stringify(clickedRecipes));
     },
-    async toggleFavorite() {
-      let response;
-
-      if (!this.isFavorite) {
-        // Send a POST request to mark the recipe as a favorite
-        response = await this.axios.post(
-          this.$root.store.server_domain + '/user/favorites', { recipeId: this.recipe.id })
-          .then(response => {
-            // Recipe successfully saved as favorite
-            // Update the favorite status locally
-            this.isFavorite = true;
-          })
-          .catch(error => {
-            // Handle the error
-            console.error('Failed to mark recipe as favorite:', error);
-          });
-      }
-    },
+    async addFavorite() {
+      console.log("addFavorite was called");
+      try {
+        const response = await this.axios.post(
+          this.$root.store.server_domain + '/users/favorites',
+          { recipeId: this.recipe.id },
+          { withCredentials: true }
+        );
+        if (response.status === 200) {
+          alert("The Recipe successfully saved as favorite");
+        } else {
+          alert("Failed to save the recipe as favorite");
+        }
+      } catch (error) {
+        console.error("Failed to save the recipe as favorite", error);
+      }
+    },
+    // async toggleFavorite() {
+    //   console.log("hello$$$$$$$$$")
+    //   console.log(this.isFavorite)
+    //   console.log(this.recipe.id)
+    //   console.log(this.$root.store.server_domain)
+    //   response = await this.axios.post(
+    //        this.$root.store.server_domain + '/users/favorites',
+    //         { recipeId: this.recipe.id },
+    //          { withCredentials: true })
+    //         .then((response) => {
+    //          // Recipe successfully saved as favorite
+    //          // Update the favorite status locally
+    //          console.log(response)
+    //          this.isFavorite = true;
+    //        })
+    //        .catch(error => {
+    //          // Handle the error
+    //          console.error('Failed to mark recipe as favorite:', error);
+    //        })
+    // },
   },
   props: {
     recipe: {
